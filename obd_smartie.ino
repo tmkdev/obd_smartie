@@ -266,8 +266,8 @@ void bignumbers(int pid, int precision, String title, float minval, float maxval
 
 void graph() {
   Graph g = Graph(&tft, "O2 V", 0, 100, ST77XX_YELLOW);
-  g.draw(float(random(48,54)));
-  
+  g.draw(float(random(49,53)));
+  delay(random(60,85));
 }
 
 
