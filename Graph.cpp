@@ -7,41 +7,41 @@
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_ST7735.h> // Hardware-specific library for ST7735
 
-SegGauge::Graph(Adafruit_ST7735 *tft, int radius, int cenx, int ceny, int seglen, int stepsize, int spacesize, int color, int background)
+int lastx = 0;
+
+Graph::Graph(Adafruit_ST7735 *tft, String title, float minval, float maxval, int tracecolor)
 {
-  _tft = tft;
-  _radius = radius;
-  _cenx = cenx;
-  _ceny = ceny;
-  _seglen = seglen;
-  _stepsize = stepsize;
-  _spacesize = spacesize;
-  _color = color;
-  _background = background;
-  _startdeg=90;
-  _enddeg=200;
+    _tft = tft;
+    _title = title;
+    _minval = minval;
+    _maxval = maxval;
+    _tracecolor = tracecolor;
 }
 
 void Graph::draw(float val)
 {
-  for (int degstep=_startdeg; degstep <= _enddeg; degstep += _stepsize) {
-    int segcolor = _color;
-    if ( (float(degstep - _startdeg) / (_enddeg - _startdeg + _stepsize ) ) >= val ) {
-      segcolor = _background;
-      
-    }
+  
+    _tft->setTextColor(ST77XX_WHITE, ST77XX_BLACK);
     
-    int x1 = _cenx - _rpx( (degstep - _stepsize/2) + _spacesize, _radius);
-    int y1 = _ceny + _rpy( (degstep - _stepsize/2) + _spacesize, _radius);
-    int x2 = _cenx - _rpx( (degstep + _stepsize/2) - _spacesize, _radius);
-    int y2 = _ceny + _rpy( (degstep + _stepsize/2) - _spacesize, _radius);
-    int x3 = _cenx - _rpx( (degstep + _stepsize/2) - _spacesize, _radius - _seglen);
-    int y3 = _ceny + _rpy( (degstep + _stepsize/2) - _spacesize, _radius - _seglen);
-    int x4 = _cenx - _rpx( (degstep - _stepsize/2) + _spacesize, _radius - _seglen);
-    int y4 = _ceny + _rpy( (degstep - _stepsize/2) + _spacesize, _radius - _seglen);
+    _tft->setTextSize(1);
+    _tft->setCursor(80 - (_title.length() * 6) / 2, 0); 
+    _tft->print(_title);
 
-    _tft->fillTriangle(x1,y1,x2,y2,x3,y3,segcolor);
-    _tft->fillTriangle(x1,y1,x3,y3,x4,y4,segcolor);
-  }
+    _tft->setCursor(0, 0); 
+    _tft->print(String(_maxval, 0));
+
+    _tft->setCursor(0, 121); 
+    _tft->print(String(_minval, 0));
+
+    _tft->drawLine(0, 12, 160, 12, ST77XX_WHITE);
+    _tft->drawLine(0, 116, 160, 116, ST77XX_WHITE);
+
+    _tft->drawLine(lastx, 13, lastx, 115, ST77XX_BLACK);
+
+    int ypoint = (102 * (val / (_maxval - _minval))) ;
+
+    lastx += 1;
+    lastx = lastx % 160;
+    _tft->fillCircle(lastx, 115-ypoint, 2, _tracecolor);
 
 }

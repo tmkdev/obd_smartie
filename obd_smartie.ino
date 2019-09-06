@@ -34,6 +34,7 @@
 #include <SPI.h>
 #include <Fonts/FreeSans24pt7b.h>
 #include "SegGauge.h"
+#include "Graph.h"
 #include <CAN.h> // the OBD2 library depends on the CAN library
 #include <OBD2.h>
 
@@ -263,6 +264,12 @@ void bignumbers(int pid, int precision, String title, float minval, float maxval
   
 }
 
+void graph() {
+  Graph g = Graph(&tft, "O2 V", 0, 100, ST77XX_YELLOW);
+  g.draw(float(random(48,54)));
+  
+}
+
 
 int currentScreen = 0;
 bool upKey = false;
@@ -280,7 +287,7 @@ int touchAve(int pin, int numSamples){
   
 }
 
-int screens=8;
+int screens=9;
 
 void loop() {
 
@@ -341,6 +348,9 @@ void loop() {
     case 7:
       bignumbers(TIMING_ADVANCE, 0, F("Timing Advance Deg"), -64, 64, ST77XX_WHITE);
       break;     
+    case 8:
+      graph();
+      break;    
   };
 
 }
