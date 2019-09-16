@@ -43,43 +43,43 @@ static const int spiClk = 8000000; // 1 MHz
 #define ST77XX_GRAY 0x4208
 
 #ifdef ADAFRUIT_HALLOWING
-  #define TFT_CS        39 // Hallowing display control pins: chip select
-  #define TFT_RST       37 // Display reset
-  #define TFT_DC        38 // Display data/command select
-  #define TFT_BACKLIGHT  7 // Display backlight pin
+#define TFT_CS        39 // Hallowing display control pins: chip select
+#define TFT_RST       37 // Display reset
+#define TFT_DC        38 // Display data/command select
+#define TFT_BACKLIGHT  7 // Display backlight pin
 
 #elif defined(ADAFRUIT_PYBADGE_M4_EXPRESS) || defined(ADAFRUIT_PYGAMER_M4_EXPRESS)
-  #define TFT_CS        44 // PyBadge/PyGamer display control pins: chip select
-  #define TFT_RST       46 // Display reset
-  #define TFT_DC        45 // Display data/command select
-  #define TFT_BACKLIGHT 47 // Display backlight pin
+#define TFT_CS        44 // PyBadge/PyGamer display control pins: chip select
+#define TFT_RST       46 // Display reset
+#define TFT_DC        45 // Display data/command select
+#define TFT_BACKLIGHT 47 // Display backlight pin
 
 #elif defined(ESP32)
-  #define TFT_CS         5
-  #define TFT_RST        22 
-  #define TFT_DC         21
-  //
-  // define not needed for all pins; reference for ESP32 physical pins connections to VSPI:
-  // SDA  GPIO23 aka VSPI MOSI
-  // SCLK GPIO18 aka SCK aka VSPI SCK
-  // D/C  GPIO21 aka A0 (also I2C SDA)
-  // RST  GPIO22 aka RESET (also I2C SCL)
-  // CS   GPIO5  aka chip select
-  // LED  3.3V
-  // VCC  5V
-  // GND - GND
-  //
+#define TFT_CS         5
+#define TFT_RST        22
+#define TFT_DC         21
+//
+// define not needed for all pins; reference for ESP32 physical pins connections to VSPI:
+// SDA  GPIO23 aka VSPI MOSI
+// SCLK GPIO18 aka SCK aka VSPI SCK
+// D/C  GPIO21 aka A0 (also I2C SDA)
+// RST  GPIO22 aka RESET (also I2C SCL)
+// CS   GPIO5  aka chip select
+// LED  3.3V
+// VCC  5V
+// GND - GND
+//
 #elif defined(ESP8266)
-  #define TFT_CS         4
-  #define TFT_RST        16                                            
-  #define TFT_DC         5
+#define TFT_CS         4
+#define TFT_RST        16
+#define TFT_DC         5
 
 #else
-  // For the breakout board, you can use any 2 or 3 pins.
-  // These pins will also work for the 1.8" TFT shield.
-  #define TFT_CS        10
-  #define TFT_RST        9 // Or set to -1 and connect to Arduino RESET pin
-  #define TFT_DC         8
+// For the breakout board, you can use any 2 or 3 pins.
+// These pins will also work for the 1.8" TFT shield.
+#define TFT_CS        10
+#define TFT_RST        9 // Or set to -1 and connect to Arduino RESET pin
+#define TFT_DC         8
 #endif
 
 // OPTION 1 (recommended) is to use the HARDWARE SPI pins, which are unique
@@ -88,14 +88,14 @@ static const int spiClk = 8000000; // 1 MHz
 // using the breakout board's microSD card.
 
 #if defined(ADAFRUIT_PYBADGE_M4_EXPRESS) || defined(ADAFRUIT_PYGAMER_M4_EXPRESS)
-    // For PyBadge and PyGamer
-    Adafruit_ST7735 tft = Adafruit_ST7735(&SPI1, TFT_CS, TFT_DC, TFT_RST);
+// For PyBadge and PyGamer
+Adafruit_ST7735 tft = Adafruit_ST7735(&SPI1, TFT_CS, TFT_DC, TFT_RST);
 #else
-    // For 1.44" and 1.8" TFT with ST7735 (including HalloWing) use:
-    Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
+// For 1.44" and 1.8" TFT with ST7735 (including HalloWing) use:
+Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 
-    // For 1.3", 1.54", and 2.0" TFT with ST7789:
-    //Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
+// For 1.3", 1.54", and 2.0" TFT with ST7789:
+//Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 #endif
 
 // OPTION 2 lets you interface the display using ANY TWO or THREE PINS,
@@ -110,7 +110,7 @@ static const int spiClk = 8000000; // 1 MHz
 //Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
 
 // Smart guage globals
-bool obd_ok = false; 
+bool obd_ok = false;
 String lastval = "--";
 
 
@@ -156,16 +156,17 @@ void setup(void) {
 
   int obd_connect_attempts = 0;
 
-  CAN.setPins(12,13); 
+  // rx, tx
+  CAN.setPins(14, 27);
   OBD2.setTimeout(300);
 
   while (obd_connect_attempts < 6) {
     displayMessage(F("Waiting for OBD..."), ST77XX_WHITE);
     Serial.println(F("Attempting OBD Initialization"));
-    
+
     if (!OBD2.begin()) {
       Serial.println(F("OBD Connection failed!"));
-      obd_connect_attempts += 1;       
+      obd_connect_attempts += 1;
       delay(1000);
     } else {
       Serial.println(F("OBD Connection success!"));
@@ -191,7 +192,7 @@ void dualDisplay(int bg_color, int fg_col_1, int fg_col_2, int pid1, int pid2, i
   } else {
     val1 = random(min1 * 100,  max1 * 100) / 100.0;
     val2 = random(min2 * 100,  max2 * 100) / 100.0;
-    delay(random(60,85));
+    delay(random(60, 85));
   }
 
   tft.setTextWrap(false);
@@ -203,71 +204,80 @@ void dualDisplay(int bg_color, int fg_col_1, int fg_col_2, int pid1, int pid2, i
 
   tft.setTextColor(ST77XX_WHITE, ST77XX_BLACK);
   tft.setTextSize(1);
-  tft.setCursor(80 - (title.length() * 6) / 2, 95); 
+  tft.setCursor(80 - (title.length() * 6) / 2, 95);
   tft.print(title);
 
-  tft.setCursor(5, 75); 
+  tft.setCursor(5, 75);
   tft.print(label1);
 
-  tft.setCursor(70, 75); 
+  tft.setCursor(70, 75);
   tft.print(label2);
 
-  tft.setCursor(30, 45); 
+  tft.setCursor(30, 45);
   tft.setTextSize(1);
   tft.println(sval1);
 
-  tft.setCursor(105, 45); 
+  tft.setCursor(105, 45);
   tft.setTextSize(1);
   tft.println(sval2);
-  
+
   seggauge.draw((val1 - min1) / (max1 - min1));
   seggauge2.draw((val2 - min2) / (max2 - min2));
 }
 
 void displayMessage(String text, int textcolor ) {
-    tft.setTextSize(1);
-    tft.setTextColor(textcolor, ST77XX_BLACK);
-    int xpos = 80 - (text.length() * 6) / 2;
-    
-    tft.setCursor(xpos, 56); 
-    tft.print(text);  
+  tft.setTextSize(1);
+  tft.setTextColor(textcolor, ST77XX_BLACK);
+  int xpos = 80 - (text.length() * 6) / 2;
+
+  tft.setCursor(xpos, 56);
+  tft.print(text);
 }
 
 void bignumbers(int pid, int precision, String title, float minval, float maxval, int textcolor) {
-    tft.setTextWrap(false);
-    float val1;
+  tft.setTextWrap(false);
+  float val1;
 
-    if (obd_ok) {
-      val1 = OBD2.pidRead(pid);
-    } else {
-      val1 = random(minval * 100,  maxval * 100) / 100.0;
-      delay(random(60,85));
-    }
+  if (obd_ok) {
+    val1 = OBD2.pidRead(pid);
+  } else {
+    val1 = random(minval * 100,  maxval * 100) / 100.0;
+    delay(random(60, 85));
+  }
 
-    tft.setTextColor(ST77XX_WHITE, ST77XX_BLACK);
-    String sval = String(val1, precision);
-  
-    tft.setTextSize(1);
-    tft.setCursor(80 - (title.length() * 6) / 2, 95); 
-    tft.print(title);
+  tft.setTextColor(ST77XX_WHITE, ST77XX_BLACK);
+  String sval = String(val1, precision);
 
-    tft.setTextColor(ST77XX_BLACK, ST77XX_BLACK);
-    tft.setCursor(80  - (3*7*lastval.length()), 20);
-    tft.setTextSize(7); 
-    tft.print(lastval);
-    lastval = sval;
+  tft.setTextSize(1);
+  tft.setCursor(80 - (title.length() * 6) / 2, 95);
+  tft.print(title);
 
-    tft.setTextColor(textcolor, ST77XX_BLACK);
-    tft.setCursor( 80  - (3*7*sval.length()), 20);
-    tft.setTextSize(7); 
-    tft.print(sval);
-  
+  tft.setTextColor(ST77XX_BLACK, ST77XX_BLACK);
+  tft.setCursor(80  - (3 * 7 * lastval.length()), 20);
+  tft.setTextSize(7);
+  tft.print(lastval);
+  lastval = sval;
+
+  tft.setTextColor(textcolor, ST77XX_BLACK);
+  tft.setCursor( 80  - (3 * 7 * sval.length()), 20);
+  tft.setTextSize(7);
+  tft.print(sval);
+
 }
 
-void graph() {
-  Graph g = Graph(&tft, "O2 V", 0, 100, ST77XX_YELLOW);
-  g.draw(float(random(49,53)));
-  delay(random(60,85));
+void graph(int pid, String title, float minval, float maxval, int tracecolor) {
+  float val1;
+
+  if (obd_ok) {
+    val1 = OBD2.pidRead(pid);
+  } else {
+    val1 = random(minval * 100,  maxval * 100) / 100.0;
+    delay(random(60, 85));
+  }
+
+  Graph g = Graph(&tft, title, minval, maxval, tracecolor);
+  g.draw(val1);
+
 }
 
 
@@ -275,24 +285,24 @@ int currentScreen = 0;
 bool upKey = false;
 bool downKey = false;
 
-int touchAve(int pin, int numSamples){
+int touchAve(int pin, int numSamples) {
   int total = 0;
-  
-  for (int x=0; x < numSamples; x += 1 ){
+
+  for (int x = 0; x < numSamples; x += 1 ) {
     total = total + touchRead(pin);
     delay(1);
   }
 
   return total / numSamples;
-  
+
 }
 
-int screens=9;
+int screens = 9;
 
 void loop() {
 
-  int uptouch = touchAve(T8, 3);
-  int downtouch = touchAve(T9, 3);
+  int uptouch = touchAve(T4, 3);
+  int downtouch = touchAve(T5, 3);
 
   if ( !upKey && uptouch < 30) {
     upKey = true;
@@ -300,7 +310,7 @@ void loop() {
 
   if ( upKey && uptouch > 50 ) {
     tft.fillScreen(ST77XX_BLACK);
-    currentScreen+=1;
+    currentScreen += 1;
     currentScreen = currentScreen % screens;
     upKey = false;
   }
@@ -311,9 +321,9 @@ void loop() {
 
   if ( downKey && downtouch > 50 ) {
     tft.fillScreen(ST77XX_BLACK);
-    currentScreen-=1;
+    currentScreen -= 1;
     if (currentScreen < 0) {
-      currentScreen = screens-1;
+      currentScreen = screens - 1;
     }
     currentScreen = currentScreen % screens;
     downKey = false;
@@ -322,14 +332,14 @@ void loop() {
   //Serial.println(currentScreen);
   Serial.println(uptouch);
   //Serial.println(downtouch);
- 
+
   switch (currentScreen) {
     case 0:
       dualDisplay(ST77XX_GRAY, ST77XX_YELLOW, ST77XX_YELLOW, SHORT_TERM_FUEL_TRIM_BANK_1, SHORT_TERM_FUEL_TRIM_BANK_2, 1, 1, F("STFT"), F("Bank 1"), F("Bank 2"), -100, 100, -100, 100 );
       break;
     case 1:
       dualDisplay(ST77XX_GRAY, ST77XX_BLUE, ST77XX_BLUE, LONG_TERM_FUEL_TRIM_BANK_1, LONG_TERM_FUEL_TRIM_BANK_2, 1, 1, F("LTFT"), F("Bank 1"), F("Bank 2"), -100, 100, -100, 100 );
-      break;      
+      break;
     case 2:
       dualDisplay(ST77XX_GRAY, ST77XX_GREEN, ST77XX_RED, VEHICLE_SPEED, ENGINE_RPM, 0, 0, F("Speed/RPM"), F("Speed kph"), F("RPM"), 0, 200, 0, 6500 );
       break;
@@ -347,10 +357,10 @@ void loop() {
       break;
     case 7:
       bignumbers(TIMING_ADVANCE, 0, F("Timing Advance Deg"), -64, 64, ST77XX_WHITE);
-      break;     
+      break;
     case 8:
-      graph();
-      break;    
+      graph(OXYGEN_SENSOR_1_SHORT_TERM_FUEL_TRIM, F("O2 S1 V"), 0, 1.28, ST77XX_YELLOW);
+      break;
   };
 
 }

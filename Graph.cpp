@@ -28,13 +28,13 @@ void Graph::draw(float val)
     _tft->print(_title);
 
     _tft->setCursor(0, 0); 
-    _tft->print(String(_maxval, 0));
+    _tft->print(String(_maxval, 2));
 
     _tft->setCursor(0, 121); 
-    _tft->print(String(_minval, 0));
+    _tft->print(String(_minval, 2));
 
     _tft->setCursor(130, 121); 
-    _tft->print(String(val, 0));
+    _tft->print(String(val, 2));
 
     _tft->drawLine(0, 12, 160, 12, ST77XX_WHITE);
     _tft->drawLine(0, 116, 160, 116, ST77XX_WHITE);
